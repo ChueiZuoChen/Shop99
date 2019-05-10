@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.paul.shop.model.Item
+import com.paul.shop.model.WatchItem
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity() {
@@ -19,7 +21,42 @@ class DetailActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate: ${item.id} / ${item.title}")
         webview.settings.javaScriptEnabled = true
         webview.loadUrl(item.content)
+        //read watch item
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        FirebaseFirestore.getInstance().collection("users")
+            .document(uid!!)
+            .collection("watchItems")
+            .document(item.id).get()
+            .addOnCompleteListener {task ->
+                if (task.isSuccessful) {
+                    val watchItem = task.result?.toObject(WatchItem::class.java)
+                    if (watchItem != null) {
+                        watch.isChecked = true
+                    }
+                }
+
+            }
+
+        //watches
+        watch.setOnCheckedChangeListener { button, checked ->
+            if(checked) {
+                FirebaseFirestore.getInstance().collection("users")
+                    .document(uid!!)
+                    .collection("watchItems")
+                    .document(item.id)
+                    .set(WatchItem(item.id))
+            } else {
+                FirebaseFirestore.getInstance().collection("users")
+                    .document(uid!!)
+                    .collection("watchItems")
+                    .document(item.id)
+                    .delete()
+            }
+        }
+
     }
+
+
 
     override fun onStart() {
         super.onStart()
