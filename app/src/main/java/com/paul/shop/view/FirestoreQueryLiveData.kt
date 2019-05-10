@@ -48,6 +48,11 @@ class FirestoreQueryLiveData : LiveData<List<Item>>(), EventListener<QuerySnapsh
                 .whereEqualTo("category",categoryId)
                 .orderBy("viewcount", Query.Direction.DESCENDING)
                 .limit(10)
+        } else {
+            query = FirebaseFirestore.getInstance()
+                .collection("items")
+                .orderBy("viewcount", Query.Direction.DESCENDING)
+                .limit(10)
         }
         registration = query.addSnapshotListener(this)
         isRegistered = true
