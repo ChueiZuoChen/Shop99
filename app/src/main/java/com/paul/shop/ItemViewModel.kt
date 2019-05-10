@@ -10,4 +10,8 @@ class ItemViewModel: ViewModel() {
     fun getItems():FirestoreQueryLiveData{
         return firestoreQueryLiveData
     }
+
+    fun setCategory(categoryId:String) {
+        firestoreQueryLiveData.setCategory(categoryId)
+    }
 }
