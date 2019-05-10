@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "729065298528",
+    "firebase_url": "https://rurushop2.firebaseio.com",
+    "project_id": "rurushop2",
+    "storage_bucket": "rurushop2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729065298528:android:b1b8767127353b4c",
+        "android_client_info": {
+          "package_name": "com.paul.shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729065298528-1su7h10clftis99br93e1mvt2o991m50.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.paul.shop",
+            "certificate_hash": "434aca27ae977f898ab57c7e82783d832e7a4565"
+          }
+        },
+        {
+          "client_id": "729065298528-k57re4l8fci42i82720n7u72b7gcgm5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOlbyzdyvF3vYD21sBlH-QmW8J8Yr2KTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729065298528-k57re4l8fci42i82720n7u72b7gcgm5c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
