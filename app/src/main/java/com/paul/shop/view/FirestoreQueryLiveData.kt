@@ -1,9 +1,10 @@
-package com.paul.shop
+package com.paul.shop.view
 
 import androidx.lifecycle.LiveData
 import com.google.firebase.firestore.*
+import com.paul.shop.model.Item
 
-class FirestoreQueryLiveData : LiveData<QuerySnapshot>(), EventListener<QuerySnapshot> {
+class FirestoreQueryLiveData : LiveData<List<Item>>(), EventListener<QuerySnapshot> {
     lateinit var registration:ListenerRegistration
     var query = FirebaseFirestore.getInstance()
         .collection("items")
@@ -26,7 +27,13 @@ class FirestoreQueryLiveData : LiveData<QuerySnapshot>(), EventListener<QuerySna
 
     override fun onEvent(querySnapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
         if (querySnapshot!= null && !querySnapshot.isEmpty) {
-            value = querySnapshot
+            val list = mutableListOf<Item>()
+            for (doc in querySnapshot) {
+                val item = doc.toObject(Item::class.java)?: Item()
+                item.id = doc.id
+                list.add(item)
+            }
+            value = list
         }
     }
 

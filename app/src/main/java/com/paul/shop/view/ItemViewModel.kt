@@ -1,13 +1,13 @@
-package com.paul.shop
+package com.paul.shop.view
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.paul.shop.model.Item
 
 class ItemViewModel: ViewModel() {
     private var items = MutableLiveData<List<Item>>()
     private var firestoreQueryLiveData = FirestoreQueryLiveData()
-    fun getItems():FirestoreQueryLiveData{
+    fun getItems(): FirestoreQueryLiveData {
         return firestoreQueryLiveData
     }
 

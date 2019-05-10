@@ -1,6 +1,5 @@
 package com.paul.shop
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,18 +8,17 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.LinearLayout
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.paul.shop.model.Category
+import com.paul.shop.model.Item
+import com.paul.shop.view.ItemHolder
+import com.paul.shop.view.ItemViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -31,8 +29,8 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     private val RC_SIGN_IN: Int = 100
     private val TAG = MainActivity::class.java.simpleName
     var categories = mutableListOf<Category>()
-    lateinit var adapter:ItemAdapter
-    lateinit var itemViewModel:ItemViewModel
+    lateinit var adapter: ItemAdapter
+    lateinit var itemViewModel: ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +65,8 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                             android.R.layout.simple_spinner_item,
                             categories
                         ).apply {
-                                setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                            }
+                            setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                        }
                         spinner.setSelection(0, false)
                         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -83,32 +81,24 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                     }
                 }
             }
-
-
         //recyclerview
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(this)
         adapter = ItemAdapter(mutableListOf<Item>())
         recycler.adapter = adapter
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel::class.java)
-        itemViewModel.getItems().observe(this,androidx.lifecycle.Observer {
-            Log.d(TAG,"observe: ${it.size()}")
-            val list = mutableListOf<Item>()
-            for (doc in it) {
-                val item = doc.toObject(Item::class.java)?:Item()
-                item.id = doc.id
-                list.add(item)
-            }
-            adapter.items = list
+        itemViewModel.getItems().observe(this, androidx.lifecycle.Observer {
+            Log.d(TAG, "observe: ${it.size}")
+            adapter.items = it
             adapter.notifyDataSetChanged()
         })
 
     }
 
-    inner class ItemAdapter(var items:List<Item>) : RecyclerView.Adapter<ItemHolder>() {
+    inner class ItemAdapter(var items: List<Item>) : RecyclerView.Adapter<ItemHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
             return ItemHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.item_row,parent,false)
+                LayoutInflater.from(parent.context).inflate(R.layout.item_row, parent, false)
             )
         }
 
@@ -118,13 +108,12 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
         override fun onBindViewHolder(holder: ItemHolder, position: Int) {
             holder.bindTo(items.get(position))
-            holder.itemView.setOnClickListener{
-                itemClicked(items.get(position),position)
+            holder.itemView.setOnClickListener {
+                itemClicked(items.get(position), position)
             }
         }
 
     }
-
 
 
     private fun itemClicked(item: Item, position: Int) {
@@ -208,8 +197,6 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                         .setAuthMethodPickerLayout(myLoginLayout)
                         .build(), RC_SIGN_IN
                 )
-
-                /*startActivityForResult(Intent(this, SignInActivity::class.java), RC_SIGN_IN)*/
                 true
             }
             R.id.action_signout -> {

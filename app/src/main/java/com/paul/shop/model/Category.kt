@@ -1,4 +1,4 @@
-package com.paul.shop
+package com.paul.shop.model
 
 data class Category (var id:String, var name:String) {
     override fun toString(): String {
