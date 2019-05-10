@@ -16,3 +16,4 @@ data class Item(var title:String,
                 var category:String):Parcelable{
     constructor():this("",0, "","","",0,"")
 }
+

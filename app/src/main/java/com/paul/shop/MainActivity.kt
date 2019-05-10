@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.LinearLayout
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthMethodPickerLayout
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     private val TAG = MainActivity::class.java.simpleName
     var categories = mutableListOf<Category>()
     lateinit var adapter:ItemAdapter
+    lateinit var itemViewModel:ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +90,12 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         recycler.layoutManager = LinearLayoutManager(this)
         adapter = ItemAdapter(mutableListOf<Item>())
         recycler.adapter = adapter
-
+        itemViewModel = ViewModelProviders.of(this).get(ItemViewModel::class.java)
+        itemViewModel.getItems().observe(this,androidx.lifecycle.Observer {
+            Log.d(TAG,"observe: ${it.size}")
+            adapter.items = it
+            adapter.notifyDataSetChanged()
+        })
 
     }
 
