@@ -27,9 +27,9 @@ import java.util.*
 class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
     private val RC_SIGN_IN: Int = 100
-    private lateinit var adapter: FirestoreRecyclerAdapter<Item, ItemHolder>
     private val TAG = MainActivity::class.java.simpleName
     var categories = mutableListOf<Category>()
+    lateinit var adapter:ItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
                             }
 
                             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                setupAdapter()
+
                             }
 
                         }
@@ -85,50 +85,33 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         //recyclerview
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(this)
-        setupAdapter()
-
-    }
-
-
-
-    private fun setupAdapter() {
-        var selected = spinner.selectedItemPosition
-        var query = if (selected > 0) {
-            adapter.stopListening()
-            FirebaseFirestore.getInstance()
-                .collection("items")
-                .whereEqualTo("category", categories.get(selected).id)
-                .orderBy("viewcount", Query.Direction.DESCENDING)
-                .limit(10)
-        } else {
-            FirebaseFirestore.getInstance()
-                .collection("items")
-                .orderBy("viewcount", Query.Direction.DESCENDING)
-                .limit(10)
-        }
-
-        val options = FirestoreRecyclerOptions.Builder<Item>()
-            .setQuery(query, Item::class.java)
-            .build()
-
-        adapter = object : FirestoreRecyclerAdapter<Item, ItemHolder>(options) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_row, parent, false)
-                return ItemHolder(view)
-            }
-
-            override fun onBindViewHolder(holder: ItemHolder, position: Int, item: Item) {
-                item.id = snapshots.getSnapshot(position).id
-                holder.bindTo(item)
-                holder.itemView.setOnClickListener {
-                    itemClicked(item, position)
-                }
-            }
-        }
+        adapter = ItemAdapter(mutableListOf<Item>())
         recycler.adapter = adapter
-        adapter.startListening()
+
+
     }
+
+    inner class ItemAdapter(var items:List<Item>) : RecyclerView.Adapter<ItemHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
+            return ItemHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.item_row,parent,false)
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return items.size
+        }
+
+        override fun onBindViewHolder(holder: ItemHolder, position: Int) {
+            holder.bindTo(items.get(position))
+            holder.itemView.setOnClickListener{
+                itemClicked(items.get(position),position)
+            }
+        }
+
+    }
+
+
 
     private fun itemClicked(item: Item, position: Int) {
         Log.d(TAG, "itemClicked: ${item.title} / ${item.price} / $position")
@@ -153,13 +136,13 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     override fun onStart() {
         super.onStart()
         FirebaseAuth.getInstance().addAuthStateListener(this)
-        adapter.startListening()
+
     }
 
     override fun onStop() {
         super.onStop()
         FirebaseAuth.getInstance().removeAuthStateListener(this)
-        adapter.stopListening()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
